@@ -1,0 +1,36 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth_service
+    volumes:
+      - "./src/logs:/go/src/app/logs"
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - "8081:8081"
+    networks:
+    - system_network
+
+  postgres:
+    image: postgres:16
+    container_name: auth_service_db
+    environment:
+      POSTGRES_DB: "tweet_auth_db"
+      POSTGRES_USER: "tweet_auth_user"
+      POSTGRES_PASSWORD: "tweet_auth_pass"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - .:/var/lib/postgresql/data
+    ports:
+      - "5436:5432"
+    networks:
+      - system_network
+
+networks: 
+  system_network:
+   name: system_network
+   driver: bridge
